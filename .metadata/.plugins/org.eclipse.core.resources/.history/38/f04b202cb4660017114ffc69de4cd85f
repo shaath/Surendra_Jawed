@@ -1,0 +1,74 @@
+package grid;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.server.browserlaunchers.Sleeper;
+import org.testng.annotations.Parameters;
+import org.testng.annotations.Test;
+
+public class GridEx1 
+{
+	@Parameters("browser")
+	@Test
+	public void grid(String br) throws MalformedURLException
+	{
+		DesiredCapabilities cap=null;
+		if (br.equalsIgnoreCase("firefox"))
+		{
+			cap=DesiredCapabilities.firefox();
+			cap.setPlatform(Platform.WINDOWS);
+		}
+		else if (br.equalsIgnoreCase("chrome"))
+		{
+			cap=DesiredCapabilities.chrome();
+			cap.setPlatform(Platform.WINDOWS);
+		}
+//		DesiredCapabilities cap=DesiredCapabilities.firefox();
+//		cap.setPlatform(Platform.WINDOWS);
+		
+//		DesiredCapabilities cap=DesiredCapabilities.chrome();
+//		cap.setPlatform(Platform.WINDOWS);
+		
+		WebDriver driver=new RemoteWebDriver(new URL("http://192.168.0.3:4444/wd/hub"), cap);
+		
+//		WebDriver driver=new FirefoxDriver();
+		driver.get("http://primusbank.qedgetech.com/sitemap.html");
+		driver.manage().window().maximize();
+		
+
+		WebElement block=driver.findElement(By.xpath(".//*[@id='Table_011']/tbody/tr[2]/td"));
+		List<WebElement> links=block.findElements(By.tagName("a"));
+		
+		System.out.println(links.size());
+		
+		for (int i = 0; i < links.size(); i++) 
+		{
+			String ltext=links.get(i).getText();
+			System.out.println(ltext);
+			links.get(i).click();
+			Sleeper.sleepTightInSeconds(3);
+			System.out.println(driver.getTitle()+"--------"+driver.getCurrentUrl());
+			
+			File src=((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			FileUtils.copyFile(src, new File("F:\\Morning_830_Batch\\Selenium\\src\\screenshots\\"+ltext+".png"));
+			
+			driver.navigate().back();
+//			Sleeper.sleepTightInSeconds(3);
+			block=driver.findElement(By.xpath(".//*[@id='Table_011']/tbody/tr[2]/td"));
+			links=block.findElements(By.tagName("a"));
+		}
+	}
+}

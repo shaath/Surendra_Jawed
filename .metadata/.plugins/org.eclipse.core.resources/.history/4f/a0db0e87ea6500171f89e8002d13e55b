@@ -1,0 +1,12 @@
+package Junit;
+
+public class LinksEg extends JunitMaster
+{
+
+	public static void main(String[] args)
+	{
+		driver.fi
+
+	}
+
+}
